@@ -144,8 +144,12 @@ def main(args) -> None:
 
 if __name__ == '__main__':
     args_parser = ArgumentParser(description='Creates a formatted datasource of movies and actors from IMDB tsvs')
-    args_parser.add_argument('--title_basics', '-tb', type=str, required=True)
-    args_parser.add_argument('--title_principals', '-tp', type=str, required=True)
-    args_parser.add_argument('--name_basics', '-nb', type=str, required=True)
-    args_parser.add_argument('--output_file', '-o', type=str, required=True)
+    args_parser.add_argument('--title_basics', '-tb', type=str, required=True,
+                             help='The path to the title.basics.tsv IMDB file')
+    args_parser.add_argument('--title_principals', '-tp', type=str, required=True,
+                             help='The path to the title.principals.tsv IMDB file')
+    args_parser.add_argument('--name_basics', '-nb', type=str, required=True,
+                             help='The path to the name.basics.tsv IMDB file')
+    args_parser.add_argument('--output_file', '-o', type=str, required=True,
+                             help='The output json file containing the formatted dataset')
     main(args_parser.parse_args(sys.argv[1:]))
