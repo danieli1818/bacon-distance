@@ -1,6 +1,7 @@
 import csv
+import itertools
 from collections import defaultdict
-from typing import Dict, Iterable, Set
+from typing import Dict, Iterable, Set, Any
 
 from consts import IMDB_TITLE_BASICS_MOVIE_ID_FIELD, IMDB_TITLE_BASICS_MOVIE_TYPE_FIELD, IMDB_MOVIE_TITLE_TYPES, \
     IMDB_TITLE_BASICS_MOVIE_NAME_FIELD, IMDB_TITLE_PRINCIPALS_MOVIE_ID_FIELD, IMDB_TITLE_PRINCIPALS_ACTOR_ID_FIELD, \
@@ -70,3 +71,55 @@ def load_workers_names(workers_names_file_path: str, workers_ids: Iterable[str])
             worker_name = row[IMDB_NAME_BASICS_ACTOR_NAME_FIELD]
             workers_names[worker_id] = worker_name
     return workers_names
+
+
+def format_dataset(movies_ids_to_names: Dict[str, str], movies_ids_to_actors_ids: Dict[str, Iterable[str]],
+                   actors_ids_to_names: Dict[str, str]) -> Dict[str, Dict[str, Any]]:
+    """
+    Formats a dataset with movie casts and an actor co-appearance graph.
+    and actors graph between actors and the amount of shared movies they acted together in.
+
+    The function takes dictionaries of movie IDs to their names, movie IDs to actor IDs,
+    and actor IDs to their names. It returns a dictionary with:
+    - 'movies_casts': a mapping from movie names to lists of actor names.
+    - 'actors_graph': a mapping from actor names to other actor names, with the
+      number of shared movies they have acted in together.
+
+    Example:
+    {
+      "movies_casts": {
+        "Fast & Furious": ["Vin Diesel", "Gal Gadot"],
+        "Justice League": ["Gal Gadot", "Ben Affleck"],
+        "Footloose": ["Kevin Bacon", "Gal Gadot", "Ben Affleck"]
+      },
+      "actors_graph": {
+        "Vin Diesel": {"Gal Gadot": 1},
+        "Gal Gadot": {"Vin Diesel": 1, "Ben Affleck": 2, "Kevin Bacon": 1},
+        "Ben Affleck": {"Gal Gadot": 2, "Kevin Bacon": 1},
+        "Kevin Bacon": {"Gal Gadot": 1, "Ben Affleck": 1}
+      }
+    }
+
+    :param movies_ids_to_names: dictionary from movie IDs to movie names.
+    :param movies_ids_to_actors_ids: dictionary from movie IDs to lists of actor IDs.
+    :param actors_ids_to_names: dictionary from actor IDs to actor names.
+    :return: The formatted dataset according to the given data.
+    """
+    movies_names_to_actors_names = {}
+    actors_names_to_actors_movies_count = defaultdict(lambda: defaultdict(int))
+    for movie_id, movie_name in movies_ids_to_names.items():
+        if movie_id not in movies_ids_to_actors_ids:
+            continue
+        actors_ids = movies_ids_to_actors_ids[movie_id]
+        actors_names = {actors_ids_to_names[actor_id] for actor_id in actors_ids if actor_id in actors_ids_to_names}
+        if not actors_names:
+            continue
+
+        movies_names_to_actors_names[movie_name] = list(actors_names)
+        for actor1_name, actor2_name in itertools.combinations(actors_names, 2):
+            actors_names_to_actors_movies_count[actor1_name][actor2_name] += 1
+            actors_names_to_actors_movies_count[actor2_name][actor1_name] += 1
+    return {
+        'movies_casts': movies_names_to_actors_names,
+        'actors_graph': actors_names_to_actors_movies_count
+    }
