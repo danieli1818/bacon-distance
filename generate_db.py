@@ -129,7 +129,6 @@ def format_dataset(movies_ids_to_names: Dict[str, str], movies_ids_to_actors_ids
 
 
 def main(args) -> None:
-    print(args.output_file)
     movies_ids_to_names = load_titles_ids(args.title_basics, IMDB_MOVIE_TITLE_TYPES)
     movies_ids_to_actors_ids = load_titles_workers(args.title_principals, movies_ids_to_names.keys(),
                                                    IMDB_ACTOR_JOB_CATEGORIES)
