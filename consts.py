@@ -8,7 +8,7 @@ IMDB_TITLE_BASICS_MOVIE_TYPE_FIELD = 'titleType'
 IMDB_TITLE_BASICS_MOVIE_NAME_FIELD = 'primaryTitle'
 
 # IMDB title.basics.tsv movie types
-IMDB_MOVIE_TYPES = ['movie']
+IMDB_MOVIE_TITLE_TYPES = ['movie']
 
 # IMDB title.principals.tsv fields
 IMDB_TITLE_PRINCIPALS_MOVIE_ID_FIELD = IMDB_MOVIE_ID_FIELD
