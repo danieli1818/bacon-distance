@@ -10,6 +10,7 @@ def load_movies_ids(movies_names_file_path: str) -> Dict[str, str]:
     Loads and returns the movies IDs to their names (titles) from the title.basics.tsv file.
 
     :param movies_names_file_path: The path to the title.basics.tsv file.
+    :return: The dict of movies IDs to their names.
     """
     movies_names = {}
     with open(movies_names_file_path, 'rt') as movies_names_file:
