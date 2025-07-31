@@ -1,10 +1,11 @@
 import csv
 from collections import defaultdict
-from typing import Dict, List, Iterable, Set
+from typing import Dict, Iterable, Set
 
 from consts import IMDB_TITLE_BASICS_MOVIE_ID_FIELD, IMDB_TITLE_BASICS_MOVIE_TYPE_FIELD, IMDB_MOVIE_TITLE_TYPES, \
     IMDB_TITLE_BASICS_MOVIE_NAME_FIELD, IMDB_TITLE_PRINCIPALS_MOVIE_ID_FIELD, IMDB_TITLE_PRINCIPALS_ACTOR_ID_FIELD, \
-    IMDB_TITLE_PRINCIPALS_JOB_CATEGORY_FIELD, IMDB_ACTOR_JOB_CATEGORIES
+    IMDB_TITLE_PRINCIPALS_JOB_CATEGORY_FIELD, IMDB_ACTOR_JOB_CATEGORIES, IMDB_NAME_BASICS_ACTOR_ID_FIELD, \
+    IMDB_NAME_BASICS_ACTOR_NAME_FIELD
 
 
 def load_titles_ids(titles_names_file_path: str, titles_types: Iterable[str]) -> Dict[str, str]:
@@ -50,3 +51,22 @@ def load_titles_workers(titles_workers_file_path: str, titles_ids: Iterable[str]
             titles_workers_ids[title_id].add(worker_id)
     return titles_workers_ids
 
+
+def load_workers_names(workers_names_file_path: str, workers_ids: Iterable[str]) -> Dict[str, str]:
+    """
+    Loads and returns the workers IDs to their names from the name.basics.tsv file.
+
+    :param workers_names_file_path: The path to the name.basics.tsv file.
+    :param workers_ids: The workers ids to load the names of.
+    :return: The dict of workers IDs to their names.
+    """
+    workers_names = {}
+    with open(workers_names_file_path, 'rt') as workers_names_file:
+        reader = csv.DictReader(workers_names_file, delimiter='\t')
+        for row in reader:
+            worker_id = row[IMDB_NAME_BASICS_ACTOR_ID_FIELD]
+            if worker_id not in workers_ids:
+                continue
+            worker_name = row[IMDB_NAME_BASICS_ACTOR_NAME_FIELD]
+            workers_names[worker_id] = worker_name
+    return workers_names
