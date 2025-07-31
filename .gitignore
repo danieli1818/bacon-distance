@@ -1,1 +1,20 @@
+# Datasources
 datasources/
+
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE settings
+# PyCharm
+.idea/
+# VS Code
+.vscode/
+
+# Environment variables
+.env
