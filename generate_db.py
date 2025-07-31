@@ -1,5 +1,8 @@
+import sys
 import csv
+import json
 import itertools
+from argparse import ArgumentParser
 from collections import defaultdict
 from typing import Dict, Iterable, Set, Any
 
@@ -123,3 +126,26 @@ def format_dataset(movies_ids_to_names: Dict[str, str], movies_ids_to_actors_ids
         'movies_casts': movies_names_to_actors_names,
         'actors_graph': actors_names_to_actors_movies_count
     }
+
+
+def main(args) -> None:
+    print(args.output_file)
+    movies_ids_to_names = load_titles_ids(args.title_basics, IMDB_MOVIE_TITLE_TYPES)
+    movies_ids_to_actors_ids = load_titles_workers(args.title_principals, movies_ids_to_names.keys(),
+                                                   IMDB_ACTOR_JOB_CATEGORIES)
+    relevant_actors_ids = set()
+    for actors_ids in movies_ids_to_actors_ids.values():
+        relevant_actors_ids.update(actors_ids)
+    actors_ids_to_names = load_workers_names(args.name_basics, relevant_actors_ids)
+    with open(args.output_file, 'wt') as output_file:
+        json.dump(format_dataset(movies_ids_to_names, movies_ids_to_actors_ids, actors_ids_to_names), output_file,
+                  ensure_ascii=False)
+
+
+if __name__ == '__main__':
+    args_parser = ArgumentParser(description='Creates a formatted datasource of movies and actors from IMDB tsvs')
+    args_parser.add_argument('--title_basics', '-tb', type=str, required=True)
+    args_parser.add_argument('--title_principals', '-tp', type=str, required=True)
+    args_parser.add_argument('--name_basics', '-nb', type=str, required=True)
+    args_parser.add_argument('--output_file', '-o', type=str, required=True)
+    main(args_parser.parse_args(sys.argv[1:]))
