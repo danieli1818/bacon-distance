@@ -9,9 +9,16 @@ This milestone focuses on creating the foundational database using a Python scri
 ## 📄 File: `generate_db.py`
 This script generates a database file in JSON format containing:
 - A mapping from each movie to the list of actors in it.
-- A mapping from each actor to the list of movies they participated in.
+- A mapping from each actor to the mapping of their co-actors and the amount of shared movies they have.
 
-This structure effectively builds a bipartite graph of actors and movies.
+Usage example:
+```shell
+python3 generate_db.py -tb ./datasources/title.basics.tsv -tp ./datasources/title.principals.tsv -nb ./datasources/name.basics.tsv -o ./datasources/dataset.json
+```
+
+Where the tsvs files are from IMDB:
+https://developer.imdb.com/non-commercial-datasets/.
+And the dataset.json is the output dataset file.
 
 ## 🧠 Data Format
 
@@ -31,3 +38,6 @@ The generated JSON file looks like this:
     "Kevin Bacon": {"Gal Gadot": 1, "Ben Affleck": 1}
   }
 }
+```
+
+An example can be seen in `examples/dataset_example.json`.
