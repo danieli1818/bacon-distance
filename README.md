@@ -1,10 +1,11 @@
-# Bacon Distance Project - Milestone #0
+# Bacon Distance Project - Milestone #1
 
 ## 🎯 Objective
-The goal of this milestone is to generate a structured dataset that will later allow us to compute distances between actors, and specifically the "Bacon Distance" (i.e., the minimal number of connections between an actor and Kevin Bacon based on shared movie appearances).
+The goal of this milestone is to use the generated structured dataset from the previous milestone to compute the "Bacon Distance" (i.e., the minimal number of connections between an actor and Kevin Bacon based on shared movie appearances).
 
 ## 🧱 Project Structure (Current Stage)
-This milestone focuses on creating the foundational database using a Python script called `generate_db.py`.
+Milestone-0 focuses on creating the foundational database using a Python script called `generate_db.py`.
+Milestone-1 focuses on calculating the "Bacon Distance" of a given actor using a Python script called `bacon_distance.py`.
 
 ## 📄 File: `generate_db.py`
 This script generates a database file in JSON format containing:
@@ -41,3 +42,13 @@ The generated JSON file looks like this:
 ```
 
 An example can be seen in `examples/dataset_example.json`.
+
+## 📄 File: `bacon_distance.py`
+This script calculates the bacon distance of the given actor, according to the given dataset from milestone-0.
+
+Usage example:
+```shell
+python3 bacon_distance.py -ac "Gal Gadot" -ds ./datasources/dataset.json
+```
+
+Where the ac is the actor name and the dataset.json is the dataset file from milestone-0.
