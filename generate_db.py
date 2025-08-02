@@ -3,7 +3,7 @@ import csv
 import itertools
 from argparse import ArgumentParser
 from collections import defaultdict
-from typing import Dict, Iterable, List
+from typing import Dict, Iterable, List, Set
 
 from consts import IMDB_TITLE_BASICS_MOVIE_ID_FIELD, IMDB_TITLE_BASICS_MOVIE_TYPE_FIELD, IMDB_MOVIE_TITLE_TYPES, \
     IMDB_TITLE_BASICS_MOVIE_NAME_FIELD, IMDB_TITLE_PRINCIPALS_MOVIE_ID_FIELD, IMDB_TITLE_PRINCIPALS_ACTOR_ID_FIELD, \
@@ -76,6 +76,49 @@ def load_workers_names(workers_names_file_path: str, workers_ids: Iterable[str])
     return workers_names
 
 
+def get_titles_names_to_workers_names(titles_ids_to_names: Dict[str, str],
+                                      titles_ids_to_workers_ids: Dict[str, Iterable[str]],
+                                      workers_ids_to_names: Dict[str, str]) -> Dict[str, Set[str]]:
+    """
+    Gets the titles names to their workers names.
+
+    :param titles_ids_to_names: dictionary from titles IDs to their names.
+    :param titles_ids_to_workers_ids: dictionary from title IDs to lists of their workers IDs.
+    :param workers_ids_to_names: dictionary from workers IDs to their names.
+    :return: The dictionary between the titles names to their workers names (if there were multiple titles
+    with the same name it combines the names of their workers)
+    """
+    titles_names_to_workers_names = defaultdict(set)
+    for title_id, title_name in titles_ids_to_names.items():
+        if title_id not in titles_ids_to_workers_ids:
+            continue
+        workers_ids = titles_ids_to_workers_ids.get(title_id, [])
+        workers_names = {workers_ids_to_names[worker_id] for worker_id in workers_ids if
+                         worker_id in workers_ids_to_names}
+        if not workers_names:
+            continue
+
+        titles_names_to_workers_names[title_name].update(workers_names)
+    return titles_names_to_workers_names
+
+
+def get_actors_co_appearances_counts(titles_names_to_workers_names: Dict[str, Set[str]]) -> Dict[str, Dict[str, int]]:
+    """
+    Returns a mapping from workers names to other workers names, with the number of shared movies
+    they have acted in together.
+
+    :param titles_names_to_workers_names: The titles names to workers names dict.
+    :return: The mapping from workers names to other workers names, with the number of shared movies
+    they have acted in together.
+    """
+    workers_to_coworkers_counts = defaultdict(lambda: defaultdict(int))
+    for workers_names in titles_names_to_workers_names.values():
+        for worker1_name, worker2_name in itertools.combinations(workers_names, 2):
+            workers_to_coworkers_counts[worker1_name][worker2_name] += 1
+            workers_to_coworkers_counts[worker2_name][worker1_name] += 1
+    return workers_to_coworkers_counts
+
+
 def format_dataset(movies_ids_to_names: Dict[str, str], movies_ids_to_actors_ids: Dict[str, Iterable[str]],
                    actors_ids_to_names: Dict[str, str]) -> MoviesActorsDataset:
     """
@@ -108,22 +151,13 @@ def format_dataset(movies_ids_to_names: Dict[str, str], movies_ids_to_actors_ids
     :param actors_ids_to_names: dictionary from actor IDs to actor names.
     :return: The formatted MoviesActorsDataset dataset according to the given data.
     """
-    movies_names_to_actors_names = {}
-    actors_names_to_actors_movies_count = defaultdict(lambda: defaultdict(int))
-    for movie_id, movie_name in movies_ids_to_names.items():
-        if movie_id not in movies_ids_to_actors_ids:
-            continue
-        actors_ids = movies_ids_to_actors_ids[movie_id]
-        actors_names = {actors_ids_to_names[actor_id] for actor_id in actors_ids if actor_id in actors_ids_to_names}
-        if not actors_names:
-            continue
 
-        movies_names_to_actors_names[movie_name] = list(actors_names)
-        for actor1_name, actor2_name in itertools.combinations(actors_names, 2):
-            actors_names_to_actors_movies_count[actor1_name][actor2_name] += 1
-            actors_names_to_actors_movies_count[actor2_name][actor1_name] += 1
+    movies_names_to_actors_names = get_titles_names_to_workers_names(movies_ids_to_names, movies_ids_to_actors_ids,
+                                                                     actors_ids_to_names)
+    actors_names_to_actors_movies_count = get_actors_co_appearances_counts(movies_names_to_actors_names)
     return MoviesActorsDataset(movies_casts=movies_names_to_actors_names,
                                actors_graph=actors_names_to_actors_movies_count)
+
 
 def main(args) -> None:
     movies_ids_to_names = load_titles_ids(args.title_basics, IMDB_MOVIE_TITLE_TYPES)
