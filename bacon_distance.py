@@ -1,8 +1,14 @@
-import time
+import sys
 import json
+import os.path
+from argparse import ArgumentParser
 from collections import deque
 from typing import Dict
 
+from pydantic import ValidationError
+
+from consts import BACON_ACTOR_NAME, INFINITY_STR
+from exceptions import ActorNotFoundError
 from models import MoviesActorsDataset
 
 
@@ -68,3 +74,43 @@ def _bfs_step(queue: deque, visited_distances: Dict[str, int], other_visited_dis
             visited_distances[co_actor] = new_visited_actor_distance
             queue.append(co_actor)
     return None
+
+
+def calc_bacon_distance(actor_name: str, movies_dataset: MoviesActorsDataset) -> str:
+    """
+    Calculates the bacon distance of the given actor according to the dataset.
+
+    :param actor_name: The actor name to calculate the bacon distance.
+    :param movies_dataset: The movies actors dataset.
+    :return: The bacon distance of the actor as a string (The number if there is a path,
+    else the infinity string from the consts).
+    """
+    if actor_name not in movies_dataset.actors_graph:
+        raise ActorNotFoundError(actor_name)
+    bacon_distance = calc_distance(actor_name, BACON_ACTOR_NAME, movies_dataset)
+    if bacon_distance:
+        return str(bacon_distance)
+    return INFINITY_STR
+
+
+def main(args):
+    """
+    Calculates the bacon distance according to the args.
+    """
+    if not os.path.isfile(args.dataset):
+        raise FileNotFoundError(f"Error, datasource file: {args.datasource} wasn't found!")
+    with open(args.dataset, 'rt') as fd:
+        dataset = MoviesActorsDataset(**json.load(fd))
+        actor_name = args.actor
+        bacon_distance = calc_bacon_distance(actor_name, dataset)
+        print(bacon_distance)
+
+
+
+if __name__ == '__main__':
+    args_parser = ArgumentParser(description='Calculates the bacon distance of the given actor')
+    args_parser.add_argument('--actor', '-ac', type=str, required=True,
+                             help='The actor to calculate the bacon distance of')
+    args_parser.add_argument('--dataset', '-ds', type=str, required=True,
+                             help='The path to the formatted dataset.json file from generate_db.py')
+    main(args_parser.parse_args(sys.argv[1:]))

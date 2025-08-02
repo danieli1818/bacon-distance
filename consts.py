@@ -21,3 +21,8 @@ IMDB_ACTOR_JOB_CATEGORIES = ['actor', 'actress']
 IMDB_NAME_BASICS_ACTOR_ID_FIELD = IMDB_ACTOR_ID_FIELD
 IMDB_NAME_BASICS_ACTOR_NAME_FIELD = 'primaryName'
 
+# Kevin Bacon actor name
+BACON_ACTOR_NAME = 'Kevin Bacon'
+
+INFINITY_STR = 'inf'
+
