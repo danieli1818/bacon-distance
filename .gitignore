@@ -18,3 +18,6 @@ env/
 
 # Environment variables
 .env
+
+# tests since it has been asked in the exercise not to include them
+tests/
