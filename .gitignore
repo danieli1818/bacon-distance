@@ -20,4 +20,5 @@ env/
 .env
 
 # tests since it has been asked in the exercise not to include them
+pytest.ini
 tests/

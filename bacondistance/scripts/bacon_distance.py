@@ -5,11 +5,9 @@ from argparse import ArgumentParser
 from collections import deque
 from typing import Dict
 
-from pydantic import ValidationError
-
-from consts import BACON_ACTOR_NAME, INFINITY_STR
-from exceptions import ActorNotFoundError
-from models import MoviesActorsDataset
+from ..utils.consts import BACON_ACTOR_NAME, INFINITY_STR
+from ..utils.exceptions import ActorNotFoundError
+from ..utils.models import MoviesActorsDataset
 
 
 def calc_distance(actor1: str, actor2: str, movies_dataset: MoviesActorsDataset) -> int | None:
