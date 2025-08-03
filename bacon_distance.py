@@ -88,7 +88,7 @@ def calc_bacon_distance(actor_name: str, movies_dataset: MoviesActorsDataset) ->
     if actor_name not in movies_dataset.actors_graph:
         raise ActorNotFoundError(actor_name)
     bacon_distance = calc_distance(actor_name, BACON_ACTOR_NAME, movies_dataset)
-    if bacon_distance:
+    if bacon_distance is not None:
         return str(bacon_distance)
     return INFINITY_STR
 
