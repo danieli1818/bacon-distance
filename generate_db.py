@@ -113,9 +113,13 @@ def get_actors_co_appearances_counts(titles_names_to_workers_names: Dict[str, Se
     """
     workers_to_coworkers_counts = defaultdict(lambda: defaultdict(int))
     for workers_names in titles_names_to_workers_names.values():
-        for worker1_name, worker2_name in itertools.combinations(workers_names, 2):
-            workers_to_coworkers_counts[worker1_name][worker2_name] += 1
-            workers_to_coworkers_counts[worker2_name][worker1_name] += 1
+        if len(workers_names) == 1:
+            solo_actor = next(iter(workers_names))
+            workers_to_coworkers_counts.setdefault(solo_actor, defaultdict(int))
+        else:
+            for worker1_name, worker2_name in itertools.combinations(workers_names, 2):
+                workers_to_coworkers_counts[worker1_name][worker2_name] += 1
+                workers_to_coworkers_counts[worker2_name][worker1_name] += 1
     return workers_to_coworkers_counts
 
 
