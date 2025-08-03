@@ -2,9 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Title</title>
+  <title>Bacon Distance Calculator</title>
+  <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
-
+  <div class="container">
+    <h1 class="title">Bacon Distance Calculator</h1>
+    <form id="baconForm">
+      <label for="actorName">Enter Actor Name:</label>
+      <input type="text" id="actorName" name="actorName" required placeholder="e.g. Gal Gadot" />
+      <button type="submit">Check Distance</button>
+    </form>
+    <div id="resultContainer">
+      <h2 class="resultTitle">Result</h2>
+      <div id="result"></div>
+    </div>
+  </div>
 </body>
 </html>
