@@ -5,9 +5,9 @@ from argparse import ArgumentParser
 from collections import deque
 from typing import Dict
 
-from ..utils.consts import BACON_ACTOR_NAME, INFINITY_STR
-from ..utils.exceptions import ActorNotFoundError
-from ..utils.models import MoviesActorsDataset
+from bacondistance.utils.consts import BACON_ACTOR_NAME, INFINITY_STR
+from bacondistance.utils.exceptions import ActorNotFoundError
+from bacondistance.utils.models import MoviesActorsDataset
 
 
 def calc_distance(actor1: str, actor2: str, movies_dataset: MoviesActorsDataset) -> int | None:
