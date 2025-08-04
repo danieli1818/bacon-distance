@@ -5,7 +5,8 @@ from argparse import ArgumentParser
 from collections import defaultdict
 from typing import Dict, Iterable, List, Set
 
-from bacondistance.utils.consts import IMDB_TITLE_BASICS_MOVIE_ID_FIELD, IMDB_TITLE_BASICS_MOVIE_TYPE_FIELD, IMDB_MOVIE_TITLE_TYPES, \
+from bacondistance.utils.consts import IMDB_TITLE_BASICS_MOVIE_ID_FIELD, IMDB_TITLE_BASICS_MOVIE_TYPE_FIELD, \
+    IMDB_MOVIE_TITLE_TYPES, \
     IMDB_TITLE_BASICS_MOVIE_NAME_FIELD, IMDB_TITLE_PRINCIPALS_MOVIE_ID_FIELD, IMDB_TITLE_PRINCIPALS_ACTOR_ID_FIELD, \
     IMDB_TITLE_PRINCIPALS_JOB_CATEGORY_FIELD, IMDB_ACTOR_JOB_CATEGORIES, IMDB_NAME_BASICS_ACTOR_ID_FIELD, \
     IMDB_NAME_BASICS_ACTOR_NAME_FIELD
@@ -163,17 +164,30 @@ def format_dataset(movies_ids_to_names: Dict[str, str], movies_ids_to_actors_ids
                                actors_graph=actors_names_to_actors_movies_count)
 
 
-def main(args) -> None:
-    movies_ids_to_names = load_titles_ids(args.title_basics, IMDB_MOVIE_TITLE_TYPES)
-    movies_ids_to_actors_ids = load_titles_workers(args.title_principals, movies_ids_to_names.keys(),
+def generate_db(title_basics_file_path: str, title_principals_file_path: str, name_basics_file_path: str,
+                output_file_path: str):
+    """
+    Generates the dataset according to the given IMDB tsvs files.
+
+    :param title_basics_file_path: The path to the title.basics.tsv IMDB file.
+    :param title_principals_file_path: The path to the title.principals.tsv IMDB file.
+    :param name_basics_file_path: The path to the name.basics.tsv IMDB file.
+    :param output_file: The output file path to save the dataset into.
+    """
+    movies_ids_to_names = load_titles_ids(title_basics_file_path, IMDB_MOVIE_TITLE_TYPES)
+    movies_ids_to_actors_ids = load_titles_workers(title_principals_file_path, movies_ids_to_names.keys(),
                                                    IMDB_ACTOR_JOB_CATEGORIES)
     relevant_actors_ids = set()
     for actors_ids in movies_ids_to_actors_ids.values():
         relevant_actors_ids.update(actors_ids)
-    actors_ids_to_names = load_workers_names(args.name_basics, relevant_actors_ids)
-    with open(args.output_file, 'wt') as output_file:
+    actors_ids_to_names = load_workers_names(name_basics_file_path, relevant_actors_ids)
+    with open(output_file_path, 'wt') as output_file:
         movies_actors_dataset = format_dataset(movies_ids_to_names, movies_ids_to_actors_ids, actors_ids_to_names)
         output_file.write(movies_actors_dataset.model_dump_json(indent=4))
+
+
+def main(args) -> None:
+    generate_db(args.title_basics, args.title_principals, args.name_basics, args.output_file)
 
 
 if __name__ == '__main__':
