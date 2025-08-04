@@ -1,7 +1,7 @@
-# Bacon Distance Project - Milestone #2
+# Bacon Distance Project - Milestone #3
 
 ## 🎯 Objective
-The goal of this milestone is to use the scripts created in the previous milestones in a web app to calculate bacon distances of actors.
+The goal of this milestone is to run the previous milestone's web app in a docker container.
 
 ## 🧱 Project Structure (Current Stage)
 Milestone-0 focuses on creating the foundational database using a Python script called `generate_db.py`.
@@ -57,10 +57,13 @@ Where the ac is the actor name and the dataset.json is the dataset file from mil
 ## 🌐 Bacon Distance Web App
 This app is divided into backend in the `bacondistance/api` directory
 and the frontend in the `frontend` directory.
-To run the web app after creating a venv using poetry, you need to run from the root project directory:
+It downloads and generates the dataset according to the files from the IMDB dataset, it updates them every app startup.
+To run the web app in the docker environment read the next section.
+
+## 🐳 Dockererized Web App
+The web app from before, can be run using docker by running the following commands:
 ```shell
-poetry run uvicorn bacondistance.api.main:app --reload
+cd bacon-distance
+docker compose up -d
 ```
-Then use a browser to connect to the web app.
-The app is using the dataset in the `examples/dataset_example.json`,
-you can easily change it in the `bacondistance/utils/paths.py` file in the `DEFAULT_DATASET_PATH` variable.
+Then you can go to the website on `http://localhost/`.
