@@ -6,3 +6,7 @@ class BaconDistanceRequest(BaseModel):
 
 class BaconDistanceResponse(BaseModel):
     bacon_distance: str
+
+class ErrorResponse(BaseModel):
+    message: str
+    description: str | None = None
