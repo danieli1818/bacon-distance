@@ -7,11 +7,14 @@ from fastapi.responses import RedirectResponse
 
 from .schemes import BaconDistanceResponse, BaconDistanceRequest, ErrorResponse
 from ..scripts.bacon_distance import calc_bacon_distance
+from ..scripts.generate_db import generate_db
+from ..scripts.update_imdb_data import update_imdb_data
 from ..utils.exceptions import ActorNotFoundError
 from ..utils.load import load_dataset
-from ..utils.paths import DEFAULT_DATASET_PATH, FRONTEND_DIR_PATH
+from ..utils.paths import PROJECT_ROOT_DIR_PATH, FRONTEND_DIR_PATH
 
-DATASET_PATH = os.getenv('DATASET_PATH', DEFAULT_DATASET_PATH)
+DATA_PATH = PROJECT_ROOT_DIR_PATH / "data"
+DATASET_PATH = DATA_PATH / "dataset.json"
 
 app = FastAPI()
 
@@ -22,6 +25,11 @@ app.mount("/static", StaticFiles(directory=frontend_path), name="static")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
+        print("Updating IMDB data...")
+        if update_imdb_data():
+            print("Generating dataset...")
+            generate_db(DATA_PATH / "title.basics.tsv", DATA_PATH / "title.principals.tsv",
+                        DATA_PATH / "name.basics.tsv", DATASET_PATH)
         print("Loading dataset...")
         app.state.movies_dataset = load_dataset(DATASET_PATH)
         print("Dataset loaded!")
@@ -31,9 +39,11 @@ async def lifespan(app: FastAPI):
 
     yield
 
+
 @app.get("/", response_class=RedirectResponse)
 async def get_home():
     return RedirectResponse(url="/static/index.html")
+
 
 @app.get("/api/bacon_distance", response_model=BaconDistanceResponse)
 async def handle_bacon_distance_request(request: BaconDistanceRequest = Depends()):
