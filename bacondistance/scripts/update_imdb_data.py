@@ -20,6 +20,9 @@ DATA_DIR = PROJECT_ROOT_DIR_PATH / "data"
 def get_uri_last_modified_datetime(uri: str) -> datetime:
     """
     Gets the last modified time of the uri and returns it as a datetime.
+
+    :param uri: The uri to get the last modified datetime of.
+    :return: The datetime of the last modified time of the uri.
     """
     req = urllib.request.Request(uri, method='HEAD')
     with urllib.request.urlopen(req) as response:
@@ -47,7 +50,7 @@ def needs_update(file_path: str, uri: str) -> bool:
     return False
 
 
-def download_file(file_path: str, uri: str):
+def download_file(file_path: str, uri: str) -> None:
     """
     Downloads the file from the uri and saves it to the file path
     """
@@ -55,7 +58,7 @@ def download_file(file_path: str, uri: str):
     urllib.request.urlretrieve(uri, file_path)
 
 
-def decompress_gz_file(gz_file_path: str, output_path: str):
+def decompress_gz_file(gz_file_path: str, output_path: str) -> None:
     """
     Decompress a .gz file to the output path.
 
