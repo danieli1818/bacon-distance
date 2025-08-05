@@ -39,7 +39,7 @@ def needs_update(file_path: str, uri: str) -> bool:
 
     existing_file_timestamp = os.path.getmtime(file_path)
     existing_file_datetime = datetime.fromtimestamp(existing_file_timestamp)
-    uri_file_last_modified_datetime = get_uri_last_modified_timestamp(uri)
+    uri_file_last_modified_datetime = get_uri_last_modified_datetime(uri)
 
     if uri_file_last_modified_datetime > existing_file_datetime:
         return True
