@@ -13,7 +13,7 @@ document.getElementById('baconForm').addEventListener('submit', async (e) => {
   resultDiv.textContent = 'Caclulating...';
 
   try {
-    const response = await fetch(`http://127.0.0.1:8000/api/bacon_distance?actor_name=${encodeURIComponent(actorName)}`);
+    const response = await fetch(`/api/bacon_distance?actor_name=${encodeURIComponent(actorName)}`);
 
 
 
