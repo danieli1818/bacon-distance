@@ -2,7 +2,7 @@ import gzip
 import os
 import shutil
 import urllib.request
-import time
+from datetime import datetime
 
 from bacondistance.utils.paths import PROJECT_ROOT_DIR_PATH
 
@@ -16,7 +16,16 @@ URIS = {
 # Directory to store the data
 DATA_DIR = PROJECT_ROOT_DIR_PATH / "data"
 
-UPDATE_TIMEDIFF = 86400 # 1 day
+
+def get_uri_last_modified_datetime(uri: str) -> datetime:
+    """
+    Gets the last modified time of the uri and returns it as a datetime.
+    """
+    req = urllib.request.Request(uri, method='HEAD')
+    with urllib.request.urlopen(req) as response:
+        last_modified = response.headers.get('Last-Modified')
+    return datetime.strptime(last_modified, '%a, %d %b %Y %H:%M:%S %Z')
+
 
 def needs_update(file_path: str, uri: str) -> bool:
     """
@@ -28,10 +37,11 @@ def needs_update(file_path: str, uri: str) -> bool:
     if not os.path.exists(file_path):
         return True
 
-    file_timestamp = os.path.getmtime(file_path)
-    current_time = time.time()
+    existing_file_timestamp = os.path.getmtime(file_path)
+    existing_file_datetime = datetime.fromtimestamp(existing_file_timestamp)
+    uri_file_last_modified_datetime = get_uri_last_modified_timestamp(uri)
 
-    if current_time - file_timestamp > UPDATE_TIMEDIFF:
+    if uri_file_last_modified_datetime > existing_file_datetime:
         return True
 
     return False
