@@ -1,6 +1,14 @@
 ENV ?= development
 ENV_FILE = .env.$(ENV)
-COMPOSE = docker-compose --env-file $(ENV_FILE)
+
+# Compose files to use depending on ENV
+ifeq ($(ENV),development)
+  COMPOSE_FILES = -f docker-compose.yml -f docker-compose.override.yml
+else
+  COMPOSE_FILES = -f docker-compose.yml
+endif
+
+COMPOSE = docker-compose $(COMPOSE_FILES) --env-file $(ENV_FILE)
 
 .PHONY: help build up down logs test format lint precommit generate-requirements \
         build-dev build-prod up-dev up-prod test-dev test-staging
@@ -64,4 +72,4 @@ precommit-install:
 
 generate-requirements:
 	poetry export --without-hashes --format=requirements.txt -o requirements.txt
-	poetry export --without-hashes --dev --format=requirements.txt -o requirements-dev.txt
+	poetry export --without-hashes --format=requirements.txt --with dev -o requirements-dev.txt
