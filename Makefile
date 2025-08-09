@@ -3,7 +3,7 @@ ENV_FILE = .env.$(ENV)
 COMPOSE = docker-compose --env-file $(ENV_FILE)
 
 .PHONY: help build up down logs test format lint precommit generate-requirements \
-        build-dev build-prod up-dev up-prod test-dev test-prod
+        build-dev build-prod up-dev up-prod test-dev test-staging
 
 help:
 	@echo "Commands:"
@@ -50,7 +50,7 @@ test:
 test-dev:
 	$(MAKE) test ENV=development
 
-test-prod:
+test-staging:
 	$(MAKE) test ENV=production
 
 format:
