@@ -18,6 +18,8 @@ env/
 
 # Environment variables
 .env
+.env.development
+.env.production
 
 # tests since it has been asked in the exercise not to include them
 pytest.ini
