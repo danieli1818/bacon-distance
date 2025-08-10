@@ -28,6 +28,14 @@ ruff = "^0.12.8"
 mypy = "^1.17.1"
 pre-commit = "^4.3.0"
 
+[tool.ruff]
+line-length = 88  # Global line length for Ruff
+select = ["B", "I"]  # Include rules for Black (B) and isort (I)
+
+[tool.ruff.isort]
+profile = "black"  # Align isort with Black's formatting rules
+known_first_party = ["bacondistance"]
+
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
