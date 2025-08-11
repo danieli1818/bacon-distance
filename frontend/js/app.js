@@ -34,4 +34,3 @@ document.getElementById('baconForm').addEventListener('submit', async (e) => {
     resultDiv.textContent = `Error: ${error.message}`;
   }
 });
-
