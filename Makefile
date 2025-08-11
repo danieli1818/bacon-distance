@@ -10,7 +10,7 @@ endif
 
 COMPOSE = docker-compose $(COMPOSE_FILES) --env-file $(ENV_FILE)
 
-.PHONY: help build up down logs test format lint precommit generate-requirements \
+.PHONY: help build up down logs test format lint precommit-install generate-requirements \
         build-dev build-prod up-dev up-prod test-dev test-staging
 
 help:
