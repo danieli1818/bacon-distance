@@ -1,5 +1,3 @@
-
-
 class ActorNotFoundError(Exception):
     """
     This error is raised when an actor wasn't found.
@@ -9,4 +7,4 @@ class ActorNotFoundError(Exception):
         self.actor_name = actor_name
 
     def __str__(self):
-        return f'Actor \'{self.actor_name}\' wasn\'t found!'
+        return f"Actor '{self.actor_name}' wasn't found!"

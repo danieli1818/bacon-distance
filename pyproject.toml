@@ -3,7 +3,7 @@ name = "bacondistance"
 version = "0.1.0"
 description = ""
 authors = [
-    {name = "Daniel Rottner"}
+    { name = "Daniel Rottner" }
 ]
 readme = "README.md"
 requires-python = ">=3.10"
@@ -19,6 +19,22 @@ dependencies = [
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.1"
+pytest-mock = "^3.14.1"
+httpx = "^0.28.1"
+black = "^25.1.0"
+isort = "^6.0.1"
+flake8 = "^7.3.0"
+ruff = "^0.12.8"
+mypy = "^1.17.1"
+pre-commit = "^4.3.0"
+
+[tool.ruff]
+line-length = 88  # Global line length for Ruff
+select = ["B", "C", "E", "F", "I", "N", "W"]  # Include rules for Black (B), Complexity (C), Errors (E), Flake8 (F), isort (I), Naming (N), Warnings (W).
+fix = true  # Enable automatic fixing (similar to Black formatting)
+
+[tool.ruff.isort]
+known-first-party = ["bacondistance"]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

@@ -1,0 +1,6 @@
+
+services:
+  web:
+    volumes:
+      - ./bacondistance:/app/bacondistance:rw
+      - ./frontend:/app/frontend:rw
