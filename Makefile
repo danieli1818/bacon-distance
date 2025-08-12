@@ -8,7 +8,7 @@ else
   COMPOSE_FILES = -f docker-compose.yml
 endif
 
-COMPOSE = docker-compose $(COMPOSE_FILES) --env-file $(ENV_FILE)
+COMPOSE = docker compose $(COMPOSE_FILES) --env-file $(ENV_FILE)
 
 .PHONY: help build up down logs test format lint precommit-install generate-requirements \
         build-dev build-prod up-dev up-prod test-dev test-staging
