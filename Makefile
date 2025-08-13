@@ -29,6 +29,7 @@ help:
 	@echo "  make test-dev/test-prod"
 
 build:
+	@echo "Building with ENV=$(ENV)"
 	$(COMPOSE) build --build-arg ENV=$(ENV)
 
 build-dev:
@@ -38,6 +39,7 @@ build-prod:
 	$(MAKE) build ENV=production
 
 up:
+	@echo "Starting containers with ENV=$(ENV)"
 	$(COMPOSE) up --build
 
 up-dev:
