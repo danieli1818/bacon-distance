@@ -4,3 +4,4 @@ services:
     volumes:
       - ./bacondistance:/app/bacondistance:rw
       - ./frontend:/app/frontend:rw
+      - ./data:/app/data:rw
