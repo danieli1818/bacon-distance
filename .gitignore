@@ -1,5 +1,6 @@
 # Datasources
 datasources/
+data/
 
 # Byte-compiled files
 __pycache__/
