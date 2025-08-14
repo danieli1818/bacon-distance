@@ -8,7 +8,10 @@ repos:
     rev: v0.12.8
     hooks:
       - id: ruff
-        args: [--config=pyproject.toml]  # This ensures the config is pulled from your pyproject.toml
+        args: [--config=pyproject.toml]
+        files: ^(bacondistance|tests)/
+      - id: ruff-format
+        files: ^(bacondistance|tests)/
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.17.1
     hooks:
