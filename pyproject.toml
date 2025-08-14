@@ -30,11 +30,19 @@ pre-commit = "^4.3.0"
 
 [tool.ruff]
 line-length = 88  # Global line length for Ruff
-select = ["B", "C", "E", "F", "I", "N", "W"]  # Include rules for Black (B), Complexity (C), Errors (E), Flake8 (F), isort (I), Naming (N), Warnings (W).
+lint.select = ["B", "C", "D", "E", "F", "I", "N", "W", "UP"]  # Include rules for Black (B), Complexity (C), Documentation (D), Errors (E), Flake8 (F), isort (I), Naming (N), Warnings (W), Upgrade (UP).
 fix = true  # Enable automatic fixing (similar to Black formatting)
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["bacondistance"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
