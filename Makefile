@@ -64,7 +64,7 @@ test-staging:
 	$(MAKE) test ENV=production
 
 format:
-	black app tests
+	ruff format bacondistance tests
 
 lint:
 	ruff . && isort --profile black .
