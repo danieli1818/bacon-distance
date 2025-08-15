@@ -1,9 +1,31 @@
+"""Calculates the Bacon distance between actors using a movies dataset.
+
+This module provides functionality to compute the shortest connection distance
+between two actors in a graph representing co-appearances in movies. It includes
+a bidirectional breadth-first search implementation for efficient distance calculation.
+
+Specifically, it supports:
+- Calculating the Bacon distance between any two actors.
+- A convenience function to calculate the Bacon distance to Kevin Bacon.
+- A command-line interface to compute and print the Bacon distance for a given actor.
+
+Main classes and functions:
+- calc_distance: Computes shortest path distance between two actors.
+- calc_bacon_distance: Computes Bacon distance from a given actor to Kevin Bacon.
+- main: CLI entry point to calculate distance from command-line arguments.
+
+Raises:
+- ActorNotFoundError when an actor is not present in the dataset.
+
+Usage:
+    python calc_bacon_distance.py --actor "Tom Hanks" --dataset path/to/dataset.json
+"""
+
 import json
 import os.path
 import sys
 from argparse import ArgumentParser
 from collections import deque
-from typing import Dict
 
 from bacondistance.utils.consts import BACON_ACTOR_NAME, INFINITY_STR
 from bacondistance.utils.exceptions import ActorNotFoundError
@@ -13,15 +35,23 @@ from bacondistance.utils.models import MoviesActorsDataset
 def calc_distance(
     actor1: str, actor2: str, movies_dataset: MoviesActorsDataset
 ) -> int | None:
-    """
-    Calculates the distance between the 2 actors, if infinite returns None.
-    The calculation is done by running a bidirectional BFS from the actors.
+    """Calculates the shortest distance between two actors in the dataset.
 
-    :param actor1: The first actor name.
-    :param actor2: The second actor name.
-    :param movies_dataset: The dataset of movies and actors.
-    :return: The bacon distance of the given actor according to the dataset,
-    if infinite returns None.
+    The distance is computed using a bidirectional breadth-first search (BFS)
+    on the actors graph within the dataset. If the actors are the same, the
+    distance is zero. If either actor is not found in the dataset, or if the
+    distance is infinite (no connection), the function returns None.
+
+    Args:
+        actor1 (str): The name of the first actor.
+        actor2 (str): The name of the second actor.
+        movies_dataset (MoviesActorsDataset): The dataset containing the
+            actors graph and related movie data.
+
+    Returns:
+        int | None: The shortest distance between the two actors as an integer.
+            Returns None if the distance is infinite or either actor is not in
+            the dataset.
     """
     if actor1 == actor2:
         return 0
@@ -53,25 +83,26 @@ def calc_distance(
 
 def _bfs_step(
     queue: deque,
-    visited_distances: Dict[str, int],
-    other_visited_distances: Dict[str, int],
-    actors_graph: Dict[str, Dict[str, int]],
+    visited_distances: dict[str, int],
+    other_visited_distances: dict[str, int],
+    actors_graph: dict[str, dict[str, int]],
 ) -> int | None:
-    """
-    Runs a BFS step on the actors graph according to the current queue state and
-    the visited nodes of both BFS directions.
-    Returns the distance between the actors given at the start of the bidirectional BFS
-    , if finished the bidirectional BFS, else None.
+    """Performs one step of bidirectional BFS on the actors graph.
 
-    :param queue: The current BFS queue of one direction
-    (all nodes has the same distance).
-    :param visited_distances: The current BFS visited nodes distances dict.
-    :param other_visited_distances: The other direction BFS visited nodes
-    distances dict.
-    :param actors_graph: The actors graph from the dataset of the co-actors of
-    each actor.
-    :return: The distance between the actors given at the start of the
-    bidirectional BFS, if finished the bidirectional BFS, else None.
+    Processes all nodes at the current BFS level from one direction, updating
+    distances and checking for overlap with the other BFS front. If the two
+    searches meet, returns the total distance between the actors.
+
+    Args:
+        queue (deque): BFS queue for the current search direction.
+        visited_distances (Dict[str, int]): Distances visited so far in this direction.
+        other_visited_distances (Dict[str, int]): Distances visited in the opposite
+        BFS direction.
+        actors_graph (Dict[str, Dict[str, int]]): Graph mapping actors to their
+        co-actors.
+
+    Returns:
+        int | None: Total distance between actors if BFS fronts meet, else None.
     """
     for _ in range(len(queue)):
         current_actor = queue.popleft()
@@ -88,13 +119,21 @@ def _bfs_step(
 
 
 def calc_bacon_distance(actor_name: str, movies_dataset: MoviesActorsDataset) -> str:
-    """
-    Calculates the bacon distance of the given actor according to the dataset.
+    """Calculates the Bacon distance of the given actor using the dataset.
 
-    :param actor_name: The actor name to calculate the bacon distance.
-    :param movies_dataset: The movies actors dataset.
-    :return: The bacon distance of the actor as a string (The number if there is a path,
-    else the infinity string from the consts).
+    The Bacon distance represents the number of connections between the given actor
+    and Kevin Bacon. If no connection exists, a predefined infinity string is returned.
+
+    Args:
+        actor_name (str): The name of the actor to calculate the Bacon distance for.
+        movies_dataset (MoviesActorsDataset): The dataset containing actors and movies.
+
+    Returns:
+        str: The Bacon distance as a string. Returns a numeric string if a path exists,
+            otherwise returns a constant string representing infinity.
+
+    Raises:
+        ActorNotFoundError: If the actor is not found in the dataset.
     """
     if actor_name not in movies_dataset.actors_graph:
         raise ActorNotFoundError(actor_name)
@@ -105,14 +144,25 @@ def calc_bacon_distance(actor_name: str, movies_dataset: MoviesActorsDataset) ->
 
 
 def main(args):
-    """
-    Calculates the bacon distance according to the args.
+    """Calculates and prints the Bacon distance based on command-line arguments.
+
+    This function loads the movies dataset from a JSON file specified in the
+    arguments, calculates the Bacon distance for the given actor, and prints the result.
+
+    Args:
+        args: An argument namespace with the following attributes:
+            - dataset (str): Path to the JSON file containing the movies dataset.
+            - actor (str): The name of the actor to calculate the Bacon distance for.
+
+    Raises:
+        FileNotFoundError: If the dataset file specified in `args.dataset` does not
+        exist.
     """
     if not os.path.isfile(args.dataset):
         raise FileNotFoundError(
             f"Error, datasource file: {args.datasource} wasn't found!"
         )
-    with open(args.dataset, "rt") as fd:
+    with open(args.dataset) as fd:
         dataset = MoviesActorsDataset(**json.load(fd))
         actor_name = args.actor
         bacon_distance = calc_bacon_distance(actor_name, dataset)

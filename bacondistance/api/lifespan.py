@@ -1,3 +1,18 @@
+"""App lifespan management for FastAPI.
+
+This module defines the `lifespan` context manager used by the FastAPI application
+to manage startup and shutdown events. It handles updating IMDB data files, generating
+a local dataset from them, and loading the dataset into the application's state.
+
+Dependencies:
+    - `update_imdb_data`: Checks and updates IMDB `.tsv.gz` files if necessary.
+    - `generate_db`: Processes IMDB files and creates a structured JSON dataset.
+    - `load_dataset`: Loads the dataset into a Pydantic model from the generated JSON.
+
+Raises:
+    RuntimeError: If dataset loading fails during startup.
+"""
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -15,11 +30,21 @@ from bacondistance.utils.load import load_dataset
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    The lifespan function of the FastAPI app, which handles
-    the loading of the app.
+    """Manages the application lifespan by updating and loading the IMDB dataset.
 
-    :param app: The FastAPI app.
+    This asynchronous context manager runs during the startup and shutdown of the
+    FastAPI app.
+    It attempts to update the IMDB data, generate the dataset if updates occur,
+    and then load
+    the dataset into the application's state.
+
+    Args:
+        app (FastAPI): The FastAPI application instance.
+
+    Raises:
+        RuntimeError: If there is a critical failure during dataset loading,
+        the startup process
+            is aborted with an exception.
     """
     try:
         print("Updating IMDB data...")
