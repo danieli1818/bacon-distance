@@ -31,6 +31,7 @@ pre-commit = "^4.3.0"
 [tool.ruff]
 line-length = 88  # Global line length for Ruff
 lint.select = ["B", "C", "D", "E", "F", "I", "N", "W", "UP"]  # Include rules for Black (B), Complexity (C), Documentation (D), Errors (E), Flake8 (F), isort (I), Naming (N), Warnings (W), Upgrade (UP).
+lint.ignore = ["D205"]
 fix = true  # Enable automatic fixing (similar to Black formatting)
 
 [tool.ruff.lint.isort]
