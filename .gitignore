@@ -22,6 +22,16 @@ env/
 .env.development
 .env.production
 
+# Ignore secret files
+*.secret
+*.key
+*.pem
+*.crt
+
+# Ignore Docker secrets
+secrets/
+*.secret.*
+
 # tests since it has been asked in the exercise not to include them
 pytest.ini
 tests/
