@@ -1,6 +1,7 @@
 # Datasources
 datasources/
 data/
+neo4j-dev-data/
 
 # Byte-compiled files
 __pycache__/
