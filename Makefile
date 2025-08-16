@@ -3,9 +3,9 @@ ENV_FILE = .env.$(ENV)
 
 # Compose files to use depending on ENV
 ifeq ($(ENV),development)
-  COMPOSE_FILES = -f docker-compose.yml -f docker-compose.override.yml
+  COMPOSE_FILES = -f docker-compose.yml -f docker-compose.dev.yml
 else
-  COMPOSE_FILES = -f docker-compose.yml
+  COMPOSE_FILES = -f docker-compose.yml -f docker-compose.prod.yml
 endif
 
 COMPOSE = docker compose $(COMPOSE_FILES) --env-file $(ENV_FILE)
