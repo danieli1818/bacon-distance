@@ -3,7 +3,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.web
       args:
         ENV: ${ENV}
     command: uvicorn bacondistance.api.main:app --host 0.0.0.0 --port 80 ${ENVIRONMENT_OPTS}
@@ -12,3 +12,28 @@ services:
     env_file:
       - .env.${ENV}
     restart: unless-stopped
+    depends_on:
+      - neo4j
+    networks:
+      - neo4j_network
+
+  neo4j:
+    build:
+      context: .
+      dockerfile: Dockerfile.neo4j
+    secrets:
+      - neo4j_auth
+    environment:
+      - NEO4J_AUTH_FILE=/run/secrets/neo4j_auth
+    networks:
+      - neo4j_network
+
+
+secrets:
+  neo4j_auth:
+    file: ./secrets/neo4j_auth.secret
+
+
+networks:
+  neo4j_network:
+

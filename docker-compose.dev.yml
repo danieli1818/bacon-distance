@@ -2,6 +2,15 @@
 services:
   web:
     volumes:
-      - ./bacondistance:/app/bacondistance:rw
-      - ./frontend:/app/frontend:rw
+      - ./bacondistance:/app/bacondistance:ro
+      - ./frontend:/app/frontend:ro
       - ./data:/app/data:rw
+      - ./neo4j/conf/neo4j.conf:/var/lib/neo4j/conf/neo4j.conf:ro
+
+  neo4j:
+    volumes:
+      - ./neo4j-dev-data/data:/data
+      - ./neo4j-dev-data/logs:/logs
+    ports:
+      - "7474:7474"
+      - "7687:7687"
