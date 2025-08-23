@@ -11,8 +11,9 @@ fi
 
 NEO4J_USER=$(cut -d'/' -f1 < "$AUTH_FILE")
 NEO4J_PASSWORD=$(cut -d'/' -f2 < "$AUTH_FILE")
-INIT_SCRIPTS_DIR="/init/scripts/bash"
-LOCK_FILE="/data/.init_done"
+INIT_SCRIPTS_DIR="/init/scripts"
+
+export INIT_SCRIPTS_DIR
 
 # Start the original Neo4j entrypoint (background)
 /startup/docker-entrypoint.sh neo4j &
@@ -35,13 +36,19 @@ done
 
 echo "✅ Neo4j is up. Running Cypher init scripts..."
 
+# Get Neo4j edition string
+NEO4J_EDITION=$(cypher-shell -u "$NEO4J_USER" -p "$NEO4J_PASSWORD" --format plain \
+  "CALL dbms.components() YIELD name, edition RETURN edition LIMIT 1;" | tail -n 1 | sed 's/"//g')
+
+export NEO4J_EDITION
+
 # Prevent re-running init by checking a lock file
 if [ -f "$LOCK_FILE" ]; then
   echo "Initialization already completed. Skipping init scripts."
 else
   echo "Running initialization scripts..."
 
-  for script in "$INIT_SCRIPTS_DIR"/*.sh; do
+  for script in "$INIT_SCRIPTS_DIR"/bash/*.sh; do
     [ -e "$script" ] || continue
 
     logfile="/tmp/$(basename "$script").log"

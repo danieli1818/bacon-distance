@@ -13,7 +13,8 @@ services:
       - .env.${ENV}
     restart: unless-stopped
     depends_on:
-      - neo4j
+      neo4j:
+        condition: service_healthy
     networks:
       - neo4j_network
 
@@ -21,17 +22,34 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.neo4j
-    secrets:
-      - neo4j_auth
+    entrypoint: /init/scripts/initialize_db.sh
+    volumes:
+      - ./neo4j/scripts/init:/init/scripts/
+      - ./secrets:/run/secrets/:ro
+#    secrets:
+#      - neo4j_auth
+#      - neo4j_user_passwords
+#      - neo4j_user_roles
     environment:
       - NEO4J_AUTH_FILE=/run/secrets/neo4j_auth
+      - LOCK_FILE=/data/.init_done
     networks:
       - neo4j_network
+    healthcheck:
+      test: "test -f /data/.init_done && curl -f http://localhost:7474/browser/ || exit 1"
+      interval: 30s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
 
 
-secrets:
-  neo4j_auth:
-    file: ./secrets/neo4j_auth.secret
+#secrets:
+#  neo4j_auth:
+#    file: ./secrets/neo4j_auth.secret
+#  neo4j_user_passwords:
+#    file: ./secrets/neo4j_user_passwords.secret
+#  neo4j_user_roles:
+#    file: ./secrets/neo4j_user_roles.secret
 
 
 networks:
